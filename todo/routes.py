@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
-from flask import Blueprint, jsonify, render_template, request
+from flask import Blueprint, g, jsonify, render_template, request
 
 from . import db
+from .auth import csrf_required, login_required
 
 
 tasks_bp = Blueprint("tasks", __name__)
@@ -32,19 +33,23 @@ def _clean_title(value):
 
 
 @tasks_bp.get("/")
+@login_required
 def index():
     return render_template("index.html")
 
 
 @tasks_bp.get("/api/tasks")
+@login_required
 def get_tasks():
     filter_name = request.args.get("filter", "all")
     if filter_name not in VALID_FILTERS:
         return _error("Filter must be all, active, or completed.", 400)
-    return jsonify({"tasks": db.list_tasks(filter_name)})
+    return jsonify({"tasks": db.list_tasks(g.user["id"], filter_name)})
 
 
 @tasks_bp.post("/api/tasks")
+@login_required
+@csrf_required
 def add_task():
     payload, error = _json_object()
     if error:
@@ -56,10 +61,12 @@ def add_task():
     if title is None:
         return _error("Task title cannot be empty.", 400, "VALIDATION_ERROR")
 
-    return jsonify(db.create_task(title)), 201
+    return jsonify(db.create_task(g.user["id"], title)), 201
 
 
 @tasks_bp.patch("/api/tasks/<int:task_id>")
+@login_required
+@csrf_required
 def edit_task(task_id: int):
     payload, error = _json_object()
     if error:
@@ -78,14 +85,16 @@ def edit_task(task_id: int):
             return _error("Completed must be true or false.", 400, "VALIDATION_ERROR")
         fields["completed"] = payload["completed"]
 
-    task = db.update_task(task_id, fields)
+    task = db.update_task(g.user["id"], task_id, fields)
     if task is None:
         return _error("Task not found.", 404, "NOT_FOUND")
     return jsonify(task)
 
 
 @tasks_bp.delete("/api/tasks/<int:task_id>")
+@login_required
+@csrf_required
 def remove_task(task_id: int):
-    if not db.delete_task(task_id):
+    if not db.delete_task(g.user["id"], task_id):
         return _error("Task not found.", 404, "NOT_FOUND")
     return "", 204

@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f4f5f1">
+    <title>{{ 'Create account' if mode == 'register' else 'Log in' }} · To-Do List</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  </head>
+  <body>
+    <main class="page-shell auth-shell">
+      <header class="page-header">
+        <a class="wordmark" href="{{ url_for('auth.login') }}" aria-label="To-Do List home">
+          <span class="wordmark-mark" aria-hidden="true">✓</span>
+          <span>DAYMARK</span>
+        </a>
+      </header>
+
+      <section class="auth-panel" aria-labelledby="auth-title">
+        <p class="eyebrow">YOUR DAY, IN FOCUS</p>
+        <h1 id="auth-title">
+          {% if mode == 'register' %}Create your space.{% else %}Welcome back.{% endif %}
+        </h1>
+        <p class="auth-intro">
+          {% if mode == 'register' %}
+            Keep your tasks in a list that belongs to you.
+          {% else %}
+            Log in to pick up where you left off.
+          {% endif %}
+        </p>
+
+        {% if error %}
+          <p class="auth-error" role="alert">{{ error }}</p>
+        {% endif %}
+
+        <form class="auth-form" method="post" action="{{ url_for('auth.register') if mode == 'register' else url_for('auth.login') }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+          <label for="username">Username</label>
+          <input
+            id="username"
+            name="username"
+            type="text"
+            value="{{ username }}"
+            autocomplete="username"
+            required
+            {% if mode == 'register' %}minlength="3" maxlength="30" pattern="[A-Za-z0-9_]+"{% endif %}
+          >
+
+          <label for="password">Password</label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            autocomplete="{{ 'new-password' if mode == 'register' else 'current-password' }}"
+            required
+            {% if mode == 'register' %}minlength="8" maxlength="128"{% endif %}
+          >
+
+          {% if mode == 'register' %}
+            <label for="confirmation">Confirm password</label>
+            <input
+              id="confirmation"
+              name="confirmation"
+              type="password"
+              autocomplete="new-password"
+              required
+              minlength="8"
+              maxlength="128"
+            >
+          {% endif %}
+
+          <button class="auth-submit" type="submit">
+            {{ 'Create account' if mode == 'register' else 'Log in' }}
+          </button>
+        </form>
+
+        <p class="auth-switch">
+          {% if mode == 'register' %}
+            Already have an account? <a href="{{ url_for('auth.login') }}">Log in</a>
+          {% else %}
+            New here? <a href="{{ url_for('auth.register') }}">Create an account</a>
+          {% endif %}
+        </p>
+      </section>
+    </main>
+  </body>
+</html>

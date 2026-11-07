@@ -6,6 +6,7 @@ const taskList = document.querySelector("#task-list");
 const taskCount = document.querySelector("#task-count");
 const notice = document.querySelector("#notice");
 const filterButtons = [...document.querySelectorAll("[data-filter]")];
+const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 
 let currentFilter = "all";
 let requestVersion = 0;
@@ -15,9 +16,15 @@ async function apiRequest(url, options = {}) {
     ...options,
     headers: {
       ...(options.body ? { "Content-Type": "application/json" } : {}),
+      ...(options.method && options.method !== "GET" ? { "X-CSRF-Token": csrfToken } : {}),
       ...options.headers,
     },
   });
+
+  if (response.status === 401) {
+    window.location.assign("/login");
+    throw new Error("Your session ended. Please log in again.");
+  }
 
   if (response.status === 204) {
     return null;

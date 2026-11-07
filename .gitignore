@@ -4,3 +4,4 @@ __pycache__/
 venv/
 instance/*.sqlite3
 instance/*.sqlite3-*
+instance/secret_key
