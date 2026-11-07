@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f4f5f1">
+    <title>To-Do List</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+  </head>
+  <body>
+    <main class="page-shell">
+      <header class="page-header">
+        <a class="wordmark" href="/" aria-label="To-Do List home">
+          <span class="wordmark-mark" aria-hidden="true">✓</span>
+          <span>DAYMARK</span>
+        </a>
+        <p class="header-note">A little more room to think.</p>
+      </header>
+
+      <section class="task-panel" aria-labelledby="page-title">
+        <div class="intro">
+          <p class="eyebrow">YOUR DAY, IN FOCUS</p>
+          <h1 id="page-title">Make space for<br><span>what matters.</span></h1>
+          <p class="intro-copy">Keep the next small thing moving.</p>
+        </div>
+
+        <form id="task-form" class="task-form">
+          <label class="visually-hidden" for="new-task">Add a task</label>
+          <input
+            id="new-task"
+            name="title"
+            type="text"
+            placeholder="What needs doing?"
+            autocomplete="off"
+            required
+          >
+          <button class="add-button" type="submit">
+            <span aria-hidden="true">+</span>
+            <span>Add task</span>
+          </button>
+        </form>
+
+        <div class="list-toolbar">
+          <div class="list-heading">
+            <h2>Tasks</h2>
+            <span id="task-count" class="task-count" aria-live="polite">—</span>
+          </div>
+          <div class="filters" role="group" aria-label="Filter tasks">
+            <button class="filter-button is-selected" type="button" data-filter="all" aria-pressed="true">All</button>
+            <button class="filter-button" type="button" data-filter="active" aria-pressed="false">Active</button>
+            <button class="filter-button" type="button" data-filter="completed" aria-pressed="false">Completed</button>
+          </div>
+        </div>
+
+        <p id="notice" class="notice" role="status" aria-live="polite"></p>
+        <ul id="task-list" class="task-list" aria-label="Tasks" aria-busy="true"></ul>
+      </section>
+
+      <footer class="page-footer">
+        <span>One thing at a time.</span>
+        <span class="footer-dot" aria-hidden="true">·</span>
+        <span>Your progress is saved on this device.</span>
+      </footer>
+    </main>
+  </body>
+</html>
